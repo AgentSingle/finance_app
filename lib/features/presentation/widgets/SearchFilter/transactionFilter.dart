@@ -38,7 +38,7 @@ class _TransactionFilterState extends State<TransactionFilter> {
     Row(
       children: [
         DateSelector(
-          label: 'Select Date',
+          label: 'Select A Date',
           dateString: getCurrentDate(),
         ),
       ],

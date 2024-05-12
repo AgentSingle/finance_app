@@ -14,6 +14,6 @@ samples, guidance on mobile development, and a full API reference.
 ### Flutter 3.19.6
 ### Tools • Dart 3.3.4 • DevTools 2.31.1
 ```command
-flutter build apk --build-name=0.1.2 --build-number=12
+flutter build apk --build-name=0.1.3 --build-number=13
 ```
 
