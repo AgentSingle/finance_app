@@ -127,7 +127,7 @@ class _DateSelectorState extends State<DateSelector> {
   @override
   void didChangeDependencies(){
     super.didChangeDependencies();
-    givenDate = widget.dateString;
+    givenDate = formatDate(widget.dateString);
   }
 
   @override
@@ -146,7 +146,7 @@ class _DateSelectorState extends State<DateSelector> {
         if (selectedDate != null) {
           var getDate = '${selectedDate.day}-${selectedDate.month}-${selectedDate.year}';
           setState(() {
-            givenDate = getDate;
+            givenDate = formatDate(getDate);
           });
         }
       },
