@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart';
+import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
+import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
+
 
 class TransactionCards extends StatefulWidget {
   final int index;
+  final Function(Map<String, dynamic>) actionResponse;
+
   const TransactionCards({
     super.key,
     required this.index,
+    required this.actionResponse,
   });
 
   @override
@@ -13,8 +20,14 @@ class TransactionCards extends StatefulWidget {
 }
 
 class _TransactionCardsState extends State<TransactionCards> {
+
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> data = {
+      'action': '',
+      'id': null,
+    };
+
     return Slidable(
       // startActionPane: ActionPane(
       //   motion: const BehindMotion(),
@@ -34,15 +47,37 @@ class _TransactionCardsState extends State<TransactionCards> {
           SlidableAction(
               icon: Icons.delete,
               backgroundColor: Colors.red,
-              onPressed: (context)=> {
-                print(widget.index)
+              onPressed: (context) => {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog();
+                  },
+                )
+                // setState(() {
+                //   data['action'] = 'DELETE';
+                //   data['id'] = widget.index;
+                //   return widget.actionResponse(data);
+                // })
               }
           ),
           SlidableAction(
               icon: Icons.edit,
               backgroundColor: Colors.green,
               onPressed: (context)=> {
-                print(widget.index)
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return FromDialog(
+                      child: TransactionAddingForm(),
+                    );
+                  },
+                ),
+                // setState(() {
+                //   data['action'] = 'UPDATE';
+                //   data['id'] = widget.index;
+                //   return widget.actionResponse(data);
+                // })
               }
           ),
         ],
