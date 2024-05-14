@@ -5,6 +5,8 @@ import 'package:finance/features/presentation/widgets/reUsableButton/circularFlo
 import 'package:finance/features/presentation/widgets/bottomBars/GlobalBottomBar.dart';
 import 'package:finance/features/presentation/widgets/containers/transactionCards.dart';
 import 'package:finance/features/presentation/widgets/SearchFilter/transactionFilter.dart';
+import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
+import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
 
 
 class FullTransactionListPage extends StatefulWidget {
@@ -21,37 +23,43 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
       backgroundColor: bluePrimary,
       body: SafeArea(
         child: appBackgroundContainer(
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // ===========[ DATE FILTER CONTAINER ]=============
-                Padding(
-                  padding: EdgeInsets.only(bottom: 8),
-                  child: TransactionFilter(
-                    dropDownList: ['Range', 'Particular', 'All'],
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // ===========[ DATE FILTER CONTAINER ]=============
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: TransactionFilter(
+                      dropDownList: ['Range', 'Particular', 'All'],
+                    ),
                   ),
-                ),
-        
-                // ===========[ LAST IMPORTANT TRANSACTION LIST ]=============
-                Container(
-                  width: MediaQuery.of(context).size.width - 16,
-                  height: MediaQuery.of(context).size.height - 200,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemCount: 50,
-                      itemBuilder: (context, index){
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 4.0),
-                          child: TransactionCards(
-                            index: index,
-                          ),
-                        );
-                      }
+
+                  // ===========[ LAST IMPORTANT TRANSACTION LIST ]=============
+                  Container(
+                    width: MediaQuery.of(context).size.width - 16,
+                    height: MediaQuery.of(context).size.height - 200,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: 50,
+                        itemBuilder: (context, index){
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 4.0),
+                            child: TransactionCards(
+                              index: index,
+                              actionResponse: (Map<String, dynamic> data){
+                                print(data);
+                              },
+                            ),
+                          );
+                        }
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+          ),
         ),
       ),
 
@@ -59,7 +67,14 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
       floatingActionButton: CircularFloatingButton(
         iconData: Icons.add,
         onPressed: (){
-          print("Full List Page Action");
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return FromDialog(
+                child: TransactionAddingForm(),
+              );
+            },
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
