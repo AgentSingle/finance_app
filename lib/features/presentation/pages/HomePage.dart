@@ -7,7 +7,6 @@ import 'package:finance/features/presentation/widgets/containers/Home/revenueCon
 import 'package:finance/features/presentation/widgets/containers/transactionCards.dart';
 import 'package:finance/features/presentation/widgets/SearchFilter/transactionFilter.dart';
 import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
-import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart';
 import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
 
 
@@ -89,13 +88,17 @@ class _HomePageState extends State<HomePage> {
             context: context,
             builder: (BuildContext context) {
               return FromDialog(
-                child: TransactionAddingForm(),
+                height: 300,
+                child: TransactionAddingForm(
+                  height: 350,
+                ),
               );
             },
           );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      extendBody: true,
     );
   }
 }

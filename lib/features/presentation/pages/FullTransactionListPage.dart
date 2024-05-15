@@ -71,13 +71,17 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
             context: context,
             builder: (BuildContext context) {
               return FromDialog(
-                child: TransactionAddingForm(),
+                height: 300,
+                child: TransactionAddingForm(
+                  height: 350,
+                ),
               );
             },
           );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      extendBody: true,
     );
   }
 }

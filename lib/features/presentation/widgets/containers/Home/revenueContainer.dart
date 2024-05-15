@@ -55,7 +55,7 @@ class _revenueContainerState extends State<revenueContainer> {
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 25,
-                          color: Colors.green
+                          color: lightGreen,
                         ),
                       ),
                     ],
@@ -86,7 +86,7 @@ class _revenueContainerState extends State<revenueContainer> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
-                                    color: Colors.green
+                                    color: lightGreen,
                                   ),
                                 ),
                               ],
@@ -110,7 +110,7 @@ class _revenueContainerState extends State<revenueContainer> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
-                                    color: Colors.red
+                                    color: lightRed,
                                 ),
                               ),
                             ],

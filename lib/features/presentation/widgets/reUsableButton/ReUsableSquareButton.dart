@@ -41,9 +41,14 @@ class _ReUsableSquareButtonState extends State<ReUsableSquareButton> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
+          height: 50,
           decoration: BoxDecoration(
             color: widget.color?? Colors.blueAccent,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              width: 1,
+              color: widget.color?? Colors.blueAccent,
+            )
           ),
           child: Center(
               child: Text(

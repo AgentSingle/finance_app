@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:finance/config/theme/colors/color_code.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart';
 import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
@@ -46,12 +47,14 @@ class _TransactionCardsState extends State<TransactionCards> {
         children: [
           SlidableAction(
               icon: Icons.delete,
-              backgroundColor: Colors.red,
+              backgroundColor: lightRed,
               onPressed: (context) => {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return WarningDialog();
+                    return WarningDialog(
+                      height: 150,
+                    );
                   },
                 )
                 // setState(() {
@@ -63,13 +66,16 @@ class _TransactionCardsState extends State<TransactionCards> {
           ),
           SlidableAction(
               icon: Icons.edit,
-              backgroundColor: Colors.green,
+              backgroundColor:lightGreen,
               onPressed: (context)=> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return FromDialog(
-                      child: TransactionAddingForm(),
+                      height: 300,
+                      child: TransactionAddingForm(
+                        height: 350,
+                      ),
                     );
                   },
                 ),
@@ -118,12 +124,12 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
             CardsRow(
                 headerText: 'Debit',
                 contentText: '50,000',
-                color: Colors.green
+                color: lightGreen,
             ),
             CardsRow(
                 headerText: 'Credit',
                 contentText: '5,000',
-                color: Colors.red
+                color: lightRed,
             ),
             CardsRow(
               headerText: 'Balance',

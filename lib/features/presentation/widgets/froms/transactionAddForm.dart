@@ -1,9 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:finance/config/theme/colors/color_code.dart';
 import 'package:finance/features/presentation/widgets/reUsableButton/ReUsableSquareButton.dart';
+import 'package:finance/features/presentation/widgets/popUps/dateSelector.dart';
+import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 
 class TransactionAddingForm extends StatefulWidget {
-  const TransactionAddingForm({super.key});
+  final double? height;
+
+  const TransactionAddingForm({
+    super.key,
+    this.height,
+  });
 
   @override
   State<TransactionAddingForm> createState() => _TransactionAddingFormState();
@@ -20,24 +29,33 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
             child: Column(
               children: [
                 Expanded(
-                    flex: 20,
+                    flex: ((widget.height??250)/10).round() - 5,
                     child: Container(
                       // color: Colors.yellow,
                       child: Column(
                         children: [
+                          DateSelector(
+                            label: 'Entry Date',
+                            fontSize: 20,
+                            dateString: getCurrentDate(),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
                           TextFormField(
                             decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.all(8),
                               border: OutlineInputBorder(
                                 // borderSide: BorderSide(
                                 //   width: 2,
                                 //   color: Colors.red
                                 // ),
                               ),
-                              labelText: 'Enter Debit Amount',
+                              labelText: 'Debit Amount',
                               labelStyle: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18
+                                  color: lightGreen,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18
                               ),
                             ),
                           ),
@@ -46,15 +64,16 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                           ),
                           TextFormField(
                             decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.all(8),
                               border: OutlineInputBorder(
                                 // borderSide: BorderSide(
                                 //   width: 2,
                                 //   color: Colors.red
                                 // ),
                               ),
-                              labelText: 'Enter Credit Amount',
+                              labelText: 'Credit Amount',
                               labelStyle: TextStyle(
-                                  color: Colors.red,
+                                  color: lightRed,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18
                               ),
@@ -65,15 +84,14 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                     )
                 ),
 
-                Expanded(
-                  flex: 5,
+                Container(
+                  height: 40,
                   child: Row(
                     children: [
-
                       Expanded(
                         child: ReUsableSquareButton(
                           pR: 4,
-                          color: Colors.red,
+                          color: lightRed,
                           textColor: Colors.white,
                           text: "Close",
                           onTap: (){
@@ -86,7 +104,7 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                       Expanded(
                         child: ReUsableSquareButton(
                           pL: 4,
-                          color: Colors.greenAccent,
+                          color: lightGreen,
                           textColor: Colors.white,
                           text: "Save",
                           onTap: (){
