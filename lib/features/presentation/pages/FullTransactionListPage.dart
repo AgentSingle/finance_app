@@ -48,7 +48,6 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
                           return Padding(
                             padding: EdgeInsets.only(bottom: 4.0),
                             child: TransactionCards(
-                              index: index,
                               actionResponse: (Map<String, dynamic> data){
                                 print(data);
                               },

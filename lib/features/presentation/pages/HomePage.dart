@@ -5,7 +5,9 @@ import 'package:finance/features/presentation/widgets/reUsableButton/circularFlo
 import 'package:finance/features/presentation/widgets/bottomBars/GlobalBottomBar.dart';
 import 'package:finance/features/presentation/widgets/containers/Home/revenueContainer.dart';
 import 'package:finance/features/presentation/widgets/containers/transactionCards.dart';
+import 'package:finance/features/presentation/widgets/containers/individualTransactionCard.dart';
 import 'package:finance/features/presentation/widgets/SearchFilter/transactionFilter.dart';
+import 'package:finance/features/presentation/widgets/SearchFilter/individualTransactionFilter.dart';
 import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
 import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
 
@@ -39,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                 // ===========[ DATE FILTER CONTAINER ]=============
                 const Padding(
                   padding: EdgeInsets.only(bottom: 8),
-                  child: TransactionFilter(
+                  child: IndividualTransactionFilter(
                     dropDownList: ['Range', 'Particular'],
                   ),
                 ),
@@ -47,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                 // ===========[ LAST IMPORTANT TRANSACTION LIST ]=============
                 Container(
                   width: MediaQuery.of(context).size.width - 16,
-                  height: MediaQuery.of(context).size.height - 420,
+                  height: MediaQuery.of(context).size.height - 500,
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
@@ -55,22 +57,22 @@ class _HomePageState extends State<HomePage> {
                     itemBuilder: (context, index){
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 4.0),
-                        child: TransactionCards(
+                        child: IndividualTransactionCards(
                           index: index,
-                          actionResponse: (Map<String, dynamic> data){
-                            print(data['action']);
-                            // String action = data['action'];
-                            // if (action == 'DELETE'){
-                            //   showDialog(
-                            //     context: context,
-                            //     builder: (BuildContext context) {
-                            //       return WarningDialog();
-                            //     },
-                            //   );
-                            // }
-                          }
+                          actionResponse: (data){
+                            print(data);
+                          },
                         ),
                       );
+                    }
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width - 16,
+                  height: 70,
+                  child: TransactionCards(
+                    actionResponse: (Map<String, dynamic> data){
+                      print(data['action']);
                     }
                   ),
                 ),

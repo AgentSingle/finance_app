@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart';
 import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
 import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
+import 'package:finance/features/presentation/block/temporary.dart';
 
 
-class TransactionCards extends StatefulWidget {
+class IndividualTransactionCards extends StatefulWidget {
+  final int index;
   final Function(Map<String, dynamic>) actionResponse;
 
-  const TransactionCards({
+  const IndividualTransactionCards({
     super.key,
+    required this.index,
     required this.actionResponse,
   });
 
   @override
-  State<TransactionCards> createState() => _TransactionCardsState();
+  State<IndividualTransactionCards> createState() => _IndividualTransactionCardsState();
 }
 
-class _TransactionCardsState extends State<TransactionCards> {
+class _IndividualTransactionCardsState extends State<IndividualTransactionCards> {
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +32,6 @@ class _TransactionCardsState extends State<TransactionCards> {
     };
 
     return Slidable(
-      // startActionPane: ActionPane(
-      //   motion: const BehindMotion(),
-      //   children: [
-      //     SlidableAction(
-      //         icon: Icons.delete,
-      //         backgroundColor: Colors.red,
-      //         onPressed: (context)=> {
-      //           print(widget.index)
-      //         }
-      //     ),
-      //   ],
-      // ),
       endActionPane: ActionPane(
         motion: const BehindMotion(),
         children: [
@@ -101,38 +93,70 @@ class TransactionCardsContent extends StatefulWidget {
 }
 
 class _TransactionCardsContentState extends State<TransactionCardsContent> {
+
+  @override
+  Widget _getIcon(double value){
+    if(value<0){
+      return const Icon(Icons.arrow_outward, size: 20, color: Colors.red,);
+    }
+    else {
+      return Transform.rotate(
+          angle: (22/7),
+          child: const Icon(
+            Icons.arrow_outward,
+            size: 20,
+            color: Colors.green,
+          )
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    double amount = genRandomNumber();
+
     return Container(
-      height: 50,
+      height: 45,
       width: MediaQuery.of(context).size.width - 16,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: const Padding(
+      child: Padding(
         padding: EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0, left: 8.0),
         child: Row(
           children: [
-            CardsRow(
-              headerText: 'Date',
-              contentText: '1-july-24',
-              alignment: CrossAxisAlignment.start,
+            const Expanded(
+                child: Text(
+                  '1-Jun-24',
+                  textAlign: TextAlign.left,
+                )
             ),
-            CardsRow(
-                headerText: 'Debit',
-                contentText: '50,000',
-                color: lightGreen,
+            Expanded(
+                child: Text(
+                    '${amount}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: (amount<0)? Colors.red: Colors.green,
+                  ),
+                )
             ),
-            CardsRow(
-                headerText: 'Credit',
-                contentText: '5,000',
-                color: lightRed,
+            Expanded(
+                child: Center(
+                  child: _getIcon(amount),
+                )
             ),
-            CardsRow(
-              headerText: 'Balance',
-              contentText: '45,000',
-              alignment: CrossAxisAlignment.end,
+            const Expanded(
+                child: Text(
+                    '80,000',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
             ),
           ],
         ),
@@ -141,44 +165,3 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
   }
 }
 
-
-/* EACH CARDS CONTENT STYLE HERE */
-class CardsRow extends StatelessWidget {
-  final CrossAxisAlignment? alignment;
-  final String headerText;
-  final String? contentText;
-  final Color? color;
-
-  const CardsRow({
-    super.key,
-    required this.headerText,
-    this.alignment,
-    this.contentText,
-    this.color
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        child: Column(
-          crossAxisAlignment: alignment?? CrossAxisAlignment.center,
-          children: [
-            Text(
-              "${headerText}",
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            Text(
-              "${contentText?? ''}",
-              style: TextStyle(
-                color: color?? Colors.black,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
