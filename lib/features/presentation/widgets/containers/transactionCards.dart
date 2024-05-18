@@ -73,6 +73,9 @@ class _TransactionCardsState extends State<TransactionCards> {
                       height: 300,
                       child: TransactionAddingForm(
                         height: 350,
+                        onSave: (Map<String, dynamic> data){
+                          print(data);
+                        },
                       ),
                     );
                   },

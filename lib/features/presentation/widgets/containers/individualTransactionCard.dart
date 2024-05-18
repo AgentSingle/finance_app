@@ -10,12 +10,18 @@ import 'package:finance/features/presentation/block/temporary.dart';
 
 class IndividualTransactionCards extends StatefulWidget {
   final int index;
+  final String? date;
+  final double? amount;
+  final double? balance;
   final Function(Map<String, dynamic>) actionResponse;
 
   const IndividualTransactionCards({
     super.key,
     required this.index,
     required this.actionResponse,
+    this.date,
+    this.amount,
+    this.balance,
   });
 
   @override
@@ -65,6 +71,9 @@ class _IndividualTransactionCardsState extends State<IndividualTransactionCards>
                       height: 300,
                       child: TransactionAddingForm(
                         height: 350,
+                        onSave: (Map<String, dynamic> data){
+                          print(data);
+                        },
                       ),
                     );
                   },
@@ -78,7 +87,12 @@ class _IndividualTransactionCardsState extends State<IndividualTransactionCards>
           ),
         ],
       ),
-      child: TransactionCardsContent()
+      child: TransactionCardsContent(
+        date: widget.date,
+        amount: widget.amount,
+        balance: widget.balance,
+        // cardsData: widget.cardsData?? {},
+      )
     );
     // return TransactionCardsContent();
   }
@@ -86,7 +100,17 @@ class _IndividualTransactionCardsState extends State<IndividualTransactionCards>
 
 
 class TransactionCardsContent extends StatefulWidget {
-  const TransactionCardsContent({super.key});
+  final String? date;
+  final double? amount;
+  final double? balance;
+  // final Map<dynamic, dynamic>? cardsData;
+
+  const TransactionCardsContent({
+    super.key,
+    this.date,
+    this.amount,
+    this.balance,
+  });
 
   @override
   State<TransactionCardsContent> createState() => _TransactionCardsContentState();
@@ -114,7 +138,7 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
 
   @override
   Widget build(BuildContext context) {
-    double amount = genRandomNumber();
+    double amount = widget.amount??0;
 
     return Container(
       height: 45,
@@ -127,15 +151,16 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
         padding: EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0, left: 8.0),
         child: Row(
           children: [
-            const Expanded(
+            Expanded(
                 child: Text(
-                  '1-Jun-24',
+                  '${widget.date?? ''}',
                   textAlign: TextAlign.left,
                 )
             ),
             Expanded(
                 child: Text(
-                    '${amount}',
+                    // '${amount}',
+                    '${widget.amount?? ''}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -149,9 +174,9 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
                   child: _getIcon(amount),
                 )
             ),
-            const Expanded(
+            Expanded(
                 child: Text(
-                    '80,000',
+                    '${widget.balance?? ''}',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,

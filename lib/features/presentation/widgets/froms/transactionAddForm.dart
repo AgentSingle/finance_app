@@ -7,10 +7,12 @@ import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 
 class TransactionAddingForm extends StatefulWidget {
+  final Function(Map<String, dynamic>) onSave;
   final double? height;
 
   const TransactionAddingForm({
     super.key,
+    required this.onSave,
     this.height,
   });
 
@@ -21,11 +23,13 @@ class TransactionAddingForm extends StatefulWidget {
 class _TransactionAddingFormState extends State<TransactionAddingForm> {
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> data = {'Save': 'save'};
+
     return Column(
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: Column(
               children: [
                 Expanded(
@@ -109,6 +113,7 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                           text: "Save",
                           onTap: (){
                             print("Cancel Button Clicked");
+                            return widget.onSave(data);
                           },
                         ),
                       )

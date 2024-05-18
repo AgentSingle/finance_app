@@ -73,6 +73,9 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
                 height: 300,
                 child: TransactionAddingForm(
                   height: 350,
+                  onSave: (Map<String, dynamic> data){
+                    print(data);
+                  },
                 ),
               );
             },
