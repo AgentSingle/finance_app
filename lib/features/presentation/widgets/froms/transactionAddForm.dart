@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
@@ -21,9 +23,17 @@ class TransactionAddingForm extends StatefulWidget {
 }
 
 class _TransactionAddingFormState extends State<TransactionAddingForm> {
+  double amount = 0.0;
+
+  void _onDebitChanged(String text) {
+    setState(() {
+      amount = (text!="" && text!="0")? double.parse(text): 0.0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> data = {'Save': 'save'};
+    Map<String, dynamic> data = {'amount': 0.0};
 
     return Column(
       children: [
@@ -43,41 +53,18 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                             fontSize: 20,
                             dateString: getCurrentDate(),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           TextFormField(
+                            onChanged: _onDebitChanged,
+                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               contentPadding: EdgeInsets.all(8),
-                              border: OutlineInputBorder(
-                                // borderSide: BorderSide(
-                                //   width: 2,
-                                //   color: Colors.red
-                                // ),
-                              ),
-                              labelText: 'Debit Amount',
+                              border: OutlineInputBorder(),
+                              labelText: 'Enter Amount',
                               labelStyle: TextStyle(
                                   color: lightGreen,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.all(8),
-                              border: OutlineInputBorder(
-                                // borderSide: BorderSide(
-                                //   width: 2,
-                                //   color: Colors.red
-                                // ),
-                              ),
-                              labelText: 'Credit Amount',
-                              labelStyle: TextStyle(
-                                  color: lightRed,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18
                               ),
@@ -88,14 +75,65 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                     )
                 ),
 
+
+
+                Container(
+                    height: 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ReUsableSquareButton(
+                            pR: 4,
+                            color: lightRed,
+                            textColor: Colors.white,
+                            text: "Credit",
+                            onTap: (){
+                              // print(amount);
+                              if(amount!=0.0){
+                                setState(() {
+                                  data['amount'] = -amount;
+                                });
+                                widget.onSave(data);
+                                Navigator.pop(context);
+                              }
+                              // print("Cancel Button Clicked");
+                            },
+                          ),
+                        ),
+
+                        Expanded(
+                          child: ReUsableSquareButton(
+                            pL: 4,
+                            color: lightGreen,
+                            textColor: Colors.white,
+                            text: "Debit",
+                            onTap: (){
+                              // print(amount);
+                              if(amount!=0.0){
+                                setState(() {
+                                  data['amount'] = amount;
+                                });
+                                widget.onSave(data);
+                                Navigator.pop(context);
+                              }
+                            },
+                          ),
+                        )
+
+                      ],
+                    )
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+
                 Container(
                   height: 40,
                   child: Row(
                     children: [
                       Expanded(
                         child: ReUsableSquareButton(
-                          pR: 4,
-                          color: lightRed,
+                          color: blueDeep,
                           textColor: Colors.white,
                           text: "Close",
                           onTap: (){
@@ -104,20 +142,6 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                           },
                         ),
                       ),
-
-                      Expanded(
-                        child: ReUsableSquareButton(
-                          pL: 4,
-                          color: lightGreen,
-                          textColor: Colors.white,
-                          text: "Save",
-                          onTap: (){
-                            print("Cancel Button Clicked");
-                            return widget.onSave(data);
-                          },
-                        ),
-                      )
-
                     ],
                   )
                 ),

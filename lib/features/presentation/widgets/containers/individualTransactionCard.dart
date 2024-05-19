@@ -50,6 +50,14 @@ class _IndividualTransactionCardsState extends State<IndividualTransactionCards>
                   builder: (BuildContext context) {
                     return WarningDialog(
                       height: 150,
+                      onDelete: (){
+                        setState(() {
+                          data['action'] = 'DELETE';
+                          data['id'] = widget.index;
+                        });
+                        Navigator.pop(context);
+                        return widget.actionResponse(data);
+                      },
                     );
                   },
                 )

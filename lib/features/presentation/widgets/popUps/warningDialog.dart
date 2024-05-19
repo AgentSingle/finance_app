@@ -4,10 +4,12 @@ import 'package:finance/features/presentation/widgets/reUsableButton/ReUsableSqu
 
 
 class WarningDialog extends StatefulWidget {
+  final VoidCallback onDelete;
   final double? height;
 
   const WarningDialog({
     super.key,
+    required this.onDelete,
     this.height
   });
 
@@ -84,9 +86,7 @@ class _WarningDialogState extends State<WarningDialog> {
                         color: lightRed,
                         textColor: Colors.white,
                         text: "Delete",
-                        onTap: (){
-                          print("Cancel Button Clicked");
-                        },
+                        onTap: widget.onDelete,
                       ),
                     ),
 
@@ -97,7 +97,6 @@ class _WarningDialogState extends State<WarningDialog> {
                         textColor: Colors.white,
                         text: "Cancel",
                         onTap: (){
-                          print("Cancel Button Clicked");
                           Navigator.pop(context);
                         },
                       ),

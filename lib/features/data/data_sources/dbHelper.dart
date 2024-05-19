@@ -56,7 +56,7 @@ class DbHelper {
     //   }
     // }
   }
-  // INSERT DATA: insert data into database
+  // INSERT DATA: insert individual-transaction data into database
   Future<ParticularTransactionModel> insert(ParticularTransactionModel particularTransactionModel) async{
     try {
       var dbClint = await db;
@@ -99,12 +99,12 @@ class DbHelper {
   //   }
   // }
   //
-  // // DELETE DATA: query database according to id and delete data
-  // Future<int> delete(int id) async{
-  //   var dbclint = await db;
-  //   return await dbclint!.delete('finance', where: 'id = ?', whereArgs: [id]);
-  // }
-  //
+  // DELETE DATA: query database according to id and delete Individual-transaction data
+  Future<int> deleteIndividualTransaction(int id) async{
+    var dbclint = await db;
+    return await dbclint!.delete('particular_transaction', where: 'id = ?', whereArgs: [id]);
+  }
+
   // // BACKUP DATABASE
   // backupDB() async{
   //   // var status = await Permission.manageExternalStorage.status;

@@ -36,7 +36,6 @@ class _HomePageState extends State<HomePage> {
   }
   loadData() async {
     particularTransactionList = dbHelper!.getParticularTransactionList();
-    print(particularTransactionList);
   }
 
   // List<dynamic> newParticularTransaction = [{
@@ -99,7 +98,12 @@ class _HomePageState extends State<HomePage> {
                                     amount: snapshot.data![index].amount,
                                     balance: snapshot.data![index].balance,
                                     actionResponse: (data){
-                                      print(snapshot.data![index]);
+                                      if (data['action'] == 'DELETE'){
+                                        dbHelper!.deleteIndividualTransaction(data['id']);
+                                        setState(() {
+                                          particularTransactionList = dbHelper!.getParticularTransactionList();
+                                        });
+                                      }
                                     },
                                   ),
                                 );
@@ -117,12 +121,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width - 16,
-                  height: 70,
-                  child: TransactionCards(
-                    actionResponse: (Map<String, dynamic> data){
-                      print(data['action']);
-                    }
-                  ),
+                  height: 55,
+                  child: TransactionCards(),
                 ),
               ],
             ),
@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                       ParticularTransactionModel(
                         year: DateTime.now().year.toInt(),
                         date: '${DateTime.now().year}-${6}-${01}',
-                        amount: 5000,
+                        amount: data['amount'],
                         balance: 5000,
                         payer: null,
                       ),
