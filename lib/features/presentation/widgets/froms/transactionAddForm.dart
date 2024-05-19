@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
 import 'package:finance/features/presentation/widgets/reUsableButton/ReUsableSquareButton.dart';
 import 'package:finance/features/presentation/widgets/popUps/dateSelector.dart';
-import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 
 class TransactionAddingForm extends StatefulWidget {
@@ -24,6 +23,7 @@ class TransactionAddingForm extends StatefulWidget {
 
 class _TransactionAddingFormState extends State<TransactionAddingForm> {
   double amount = 0.0;
+  Map<String, dynamic> data = {'amount': 0.0, 'date': 'null'};
 
   void _onDebitChanged(String text) {
     setState(() {
@@ -33,7 +33,6 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> data = {'amount': 0.0};
 
     return Column(
       children: [
@@ -51,7 +50,11 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                           DateSelector(
                             label: 'Entry Date',
                             fontSize: 20,
-                            dateString: getCurrentDate(),
+                            responseDate: (value) {
+                              setState(() {
+                                data['date'] = value.toString();
+                              });
+                            },
                           ),
                           const SizedBox(
                             height: 20,

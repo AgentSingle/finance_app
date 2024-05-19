@@ -7,14 +7,16 @@ import 'package:finance/features/presentation/block/DateFormatter.dart';
 /* =============================[ Date Selector ]============================= */
 class DateSelector extends StatefulWidget {
   final String label;
-  final String dateString;
+  final int? dateDifference;
   final double? fontSize;
+  final Function(String)? responseDate;
 
   const DateSelector({
     super.key,
     required this.label,
-    required this.dateString,
+    this.dateDifference,
     this.fontSize,
+    this.responseDate,
   });
 
   @override
@@ -25,9 +27,21 @@ class _DateSelectorState extends State<DateSelector> {
   String givenDate = "";
 
   @override
-  void didChangeDependencies(){
-    super.didChangeDependencies();
-    givenDate = formatDate(widget.dateString);
+  void initState(){
+    super.initState();
+    String getDate = getPreviousDate(widget.dateDifference??0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setNewDate(getDate);
+    });
+  }
+
+  void setNewDate(String getDate){
+    setState(() {
+      givenDate = formatDate(getDate);
+    });
+    if(widget.responseDate!=null){
+      return widget.responseDate!(convertDateFormat(getDate));
+    }
   }
 
   @override
@@ -45,9 +59,7 @@ class _DateSelectorState extends State<DateSelector> {
         );
         if (selectedDate != null) {
           var getDate = '${selectedDate.day}-${selectedDate.month}-${selectedDate.year}';
-          setState(() {
-            givenDate = formatDate(getDate);
-          });
+          setNewDate(getDate);
         }
       },
 
