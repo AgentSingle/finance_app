@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
@@ -12,6 +14,7 @@ import 'package:finance/features/presentation/widgets/froms/transactionAddForm.d
 
 import 'package:finance/features/data/data_sources/dbHelper.dart';
 import 'package:finance/features/data/models/particular_transaction_model.dart';
+import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 
 
@@ -23,6 +26,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String startDate = convertDateFormat(getPreviousDate(31));
+  String endDate = convertDateFormat(getPreviousDate(0));
 
   //DATABASE RELATED JOB
   DbHelper? dbHelper;
@@ -32,20 +37,34 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     dbHelper = DbHelper();
-    loadData();
-  }
-  loadData() async {
-    particularTransactionList = dbHelper!.getParticularTransactionList();
+    loadData(startDate, endDate);
   }
 
-  // List<dynamic> newParticularTransaction = [{
-  //   'id': null,
-  //   'year': DateTime.now().year,
-  //   'date': '${DateTime.now().year}-${6}-${01}',
-  //   'amount': 5000,
-  //   'balance': 5000,
-  //   'payer': '',
-  // }];
+  loadData(String start, String end) async {
+    particularTransactionList = dbHelper!.queryItemsBetweenDates(start, end);
+  }
+
+  void insertTransaction(Map<String, dynamic> data){
+    print(data);
+    dbHelper!.insertIndividualTransaction(
+      ParticularTransactionModel(
+        year: DateTime.now().year.toInt(),
+        date: data['date'],
+        amount: data['amount'],
+        balance: 5000,
+        payer: null,
+      ),
+    ).then((value){
+      print("Success");
+      // loadData(startDate, endDate);
+      setState(() {
+        // particularTransactionList = dbHelper!.getParticularTransactionList();
+        loadData(startDate, endDate);
+      });
+    }).onError((error, stackTrace){
+      print(error.toString());
+    });
+  }
 
 
   @override
@@ -66,10 +85,16 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // ===========[ DATE FILTER CONTAINER ]=============
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(bottom: 8),
                   child: IndividualTransactionFilter(
                     dropDownList: ['Range', 'Particular'],
+                    filterData: (Map<String, dynamic> data){
+                      // print(data);
+                      setState(() {
+                        loadData(data['startDate'], data['endDate']);
+                      });
+                    }
                   ),
                 ),
 
@@ -101,7 +126,8 @@ class _HomePageState extends State<HomePage> {
                                       if (data['action'] == 'DELETE'){
                                         dbHelper!.deleteIndividualTransaction(data['id']);
                                         setState(() {
-                                          particularTransactionList = dbHelper!.getParticularTransactionList();
+                                          loadData(startDate, endDate);
+                                          // particularTransactionList = dbHelper!.getParticularTransactionList();
                                         });
                                       }
                                     },
@@ -137,33 +163,16 @@ class _HomePageState extends State<HomePage> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return FromDialog(
-                height: 300,
-                child: TransactionAddingForm(
-                  height: 350,
-                  onSave: (Map<String, dynamic> data){
-                    print(data);
-                    dbHelper!.insert(
-                      ParticularTransactionModel(
-                        year: DateTime.now().year.toInt(),
-                        date: '${DateTime.now().year}-${6}-${01}',
-                        amount: data['amount'],
-                        balance: 5000,
-                        payer: null,
-                      ),
-                    )
-                    .then((value){
-                      print("Success");
-                      setState(() {
-                        particularTransactionList = dbHelper!.getParticularTransactionList();
-                      });
-                    })
-                    .onError((error, stackTrace){
-                      print(error.toString());
-                    });
-                  },
-                ),
-              );
+            return FromDialog(
+              height: 300,
+              child: TransactionAddingForm(
+                height: 350,
+                onSave: (Map<String, dynamic> data){
+                  // print(data);
+                  insertTransaction(data);
+                },
+              ),
+            );
             },
           );
         },

@@ -32,7 +32,7 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
                   Padding(
                     padding: EdgeInsets.only(bottom: 8),
                     child: TransactionFilter(
-                      dropDownList: ['Range', 'Particular', 'All'],
+                      dropDownList: ['Range', 'Particular'],
                     ),
                   ),
 

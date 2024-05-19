@@ -21,13 +21,8 @@ Map<String, int> mapAsDate(String dateString){
 
 String formatDate(String dateString){
   Map dateMap = mapAsDate(dateString);
-
-  // Convert month from number to name
   String monthName = getMonthName(dateMap['month']);
-
-  // Convert year to 2-digit format
   String yearShort = dateMap['year'].toString().substring(2);
-
   return '${dateMap['day']}-$monthName-$yearShort';
 }
 
@@ -60,4 +55,15 @@ String getMonthName(int month) {
     default:
       return '';
   }
+}
+
+String convertDateFormat(String date) {
+  final parts = date.split('-');
+  if (parts.length == 3) {
+    final day = parts[0].padLeft(2, '0');
+    final month = parts[1].padLeft(2, '0');
+    final year = parts[2];
+    return '$year-$month-$day';
+  }
+  return date;
 }

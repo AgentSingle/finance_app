@@ -57,7 +57,7 @@ class DbHelper {
     // }
   }
   // INSERT DATA: insert individual-transaction data into database
-  Future<ParticularTransactionModel> insert(ParticularTransactionModel particularTransactionModel) async{
+  Future<ParticularTransactionModel> insertIndividualTransaction(ParticularTransactionModel particularTransactionModel) async{
     try {
       var dbClint = await db;
       await dbClint!.insert('particular_transaction', particularTransactionModel.toJson());
@@ -101,8 +101,21 @@ class DbHelper {
   //
   // DELETE DATA: query database according to id and delete Individual-transaction data
   Future<int> deleteIndividualTransaction(int id) async{
-    var dbclint = await db;
-    return await dbclint!.delete('particular_transaction', where: 'id = ?', whereArgs: [id]);
+    var dbClient = await db;
+    return await dbClient!.delete('particular_transaction', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<ParticularTransactionModel>> queryItemsBetweenDates(String startDate, String endDate) async {
+    // print('Query Start $startDate');
+    // print('Query end $endDate');
+    final dbClient = await db;
+    final List<Map<String, Object?>> queryResult = await dbClient!.query(
+      'particular_transaction',
+      where: 'date BETWEEN ? AND ?',
+      whereArgs: [startDate, endDate],
+      orderBy: 'date ASC', // Change to 'date DESC' for descending order
+    );
+    return queryResult.map((Map<String, dynamic> map) => ParticularTransactionModel.fromJson(map)).toList();
   }
 
   // // BACKUP DATABASE

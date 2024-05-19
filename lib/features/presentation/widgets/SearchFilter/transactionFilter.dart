@@ -26,11 +26,10 @@ class _TransactionFilterState extends State<TransactionFilter> {
       children: [
         DateSelector(
           label: 'Start Date',
-          dateString: getPreviousDate(31),
+          dateDifference: 31,
         ),
         DateSelector(
           label: 'End Date',
-          dateString: getCurrentDate(),
         ),
       ],
     ),
@@ -39,20 +38,6 @@ class _TransactionFilterState extends State<TransactionFilter> {
       children: [
         DateSelector(
           label: 'Select A Date',
-          dateString: getCurrentDate(),
-        ),
-      ],
-    ),
-    /* _____________________________[ ALL ]_____________________________ */
-    Row(
-      children: [
-        DateSelector(
-          label: 'Start Date',
-          dateString: getPreviousDate(31),
-        ),
-        DateSelector(
-          label: 'End Date',
-          dateString: getCurrentDate(),
         ),
       ],
     ),
