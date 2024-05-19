@@ -1,60 +1,70 @@
+import 'dart:ffi';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:finance/config/theme/colors/color_code.dart';
 import 'package:finance/features/presentation/widgets/reUsableButton/ReUsableSquareButton.dart';
+import 'package:finance/features/presentation/widgets/popUps/dateSelector.dart';
+import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 
 class TransactionAddingForm extends StatefulWidget {
-  const TransactionAddingForm({super.key});
+  final Function(Map<String, dynamic>) onSave;
+  final double? height;
+
+  const TransactionAddingForm({
+    super.key,
+    required this.onSave,
+    this.height,
+  });
 
   @override
   State<TransactionAddingForm> createState() => _TransactionAddingFormState();
 }
 
 class _TransactionAddingFormState extends State<TransactionAddingForm> {
+  double amount = 0.0;
+
+  void _onDebitChanged(String text) {
+    setState(() {
+      amount = (text!="" && text!="0")? double.parse(text): 0.0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> data = {'amount': 0.0};
+
     return Column(
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8.0),
             child: Column(
               children: [
                 Expanded(
-                    flex: 20,
+                    flex: ((widget.height??250)/10).round() - 5,
                     child: Container(
                       // color: Colors.yellow,
                       child: Column(
                         children: [
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                // borderSide: BorderSide(
-                                //   width: 2,
-                                //   color: Colors.red
-                                // ),
-                              ),
-                              labelText: 'Enter Debit Amount',
-                              labelStyle: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18
-                              ),
-                            ),
+                          DateSelector(
+                            label: 'Entry Date',
+                            fontSize: 20,
+                            dateString: getCurrentDate(),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           TextFormField(
+                            onChanged: _onDebitChanged,
+                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
-                              border: OutlineInputBorder(
-                                // borderSide: BorderSide(
-                                //   width: 2,
-                                //   color: Colors.red
-                                // ),
-                              ),
-                              labelText: 'Enter Credit Amount',
+                              contentPadding: EdgeInsets.all(8),
+                              border: OutlineInputBorder(),
+                              labelText: 'Enter Amount',
                               labelStyle: TextStyle(
-                                  color: Colors.red,
+                                  color: lightGreen,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18
                               ),
@@ -65,15 +75,65 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                     )
                 ),
 
-                Expanded(
-                  flex: 5,
+
+
+                Container(
+                    height: 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ReUsableSquareButton(
+                            pR: 4,
+                            color: lightRed,
+                            textColor: Colors.white,
+                            text: "Credit",
+                            onTap: (){
+                              // print(amount);
+                              if(amount!=0.0){
+                                setState(() {
+                                  data['amount'] = -amount;
+                                });
+                                widget.onSave(data);
+                                Navigator.pop(context);
+                              }
+                              // print("Cancel Button Clicked");
+                            },
+                          ),
+                        ),
+
+                        Expanded(
+                          child: ReUsableSquareButton(
+                            pL: 4,
+                            color: lightGreen,
+                            textColor: Colors.white,
+                            text: "Debit",
+                            onTap: (){
+                              // print(amount);
+                              if(amount!=0.0){
+                                setState(() {
+                                  data['amount'] = amount;
+                                });
+                                widget.onSave(data);
+                                Navigator.pop(context);
+                              }
+                            },
+                          ),
+                        )
+
+                      ],
+                    )
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+
+                Container(
+                  height: 40,
                   child: Row(
                     children: [
-
                       Expanded(
                         child: ReUsableSquareButton(
-                          pR: 4,
-                          color: Colors.red,
+                          color: blueDeep,
                           textColor: Colors.white,
                           text: "Close",
                           onTap: (){
@@ -82,19 +142,6 @@ class _TransactionAddingFormState extends State<TransactionAddingForm> {
                           },
                         ),
                       ),
-
-                      Expanded(
-                        child: ReUsableSquareButton(
-                          pL: 4,
-                          color: Colors.greenAccent,
-                          textColor: Colors.white,
-                          text: "Save",
-                          onTap: (){
-                            print("Cancel Button Clicked");
-                          },
-                        ),
-                      )
-
                     ],
                   )
                 ),

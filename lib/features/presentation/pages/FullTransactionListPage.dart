@@ -47,12 +47,7 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
                         itemBuilder: (context, index){
                           return Padding(
                             padding: EdgeInsets.only(bottom: 4.0),
-                            child: TransactionCards(
-                              index: index,
-                              actionResponse: (Map<String, dynamic> data){
-                                print(data);
-                              },
-                            ),
+                            child: TransactionCards(),
                           );
                         }
                     ),
@@ -71,13 +66,20 @@ class _FullTransactionListPageState extends State<FullTransactionListPage> {
             context: context,
             builder: (BuildContext context) {
               return FromDialog(
-                child: TransactionAddingForm(),
+                height: 300,
+                child: TransactionAddingForm(
+                  height: 350,
+                  onSave: (Map<String, dynamic> data){
+                    print(data);
+                  },
+                ),
               );
             },
           );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      extendBody: true,
     );
   }
 }

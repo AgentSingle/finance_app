@@ -4,7 +4,14 @@ import 'package:finance/features/presentation/widgets/reUsableButton/ReUsableSqu
 
 
 class WarningDialog extends StatefulWidget {
-  const WarningDialog({super.key});
+  final VoidCallback onDelete;
+  final double? height;
+
+  const WarningDialog({
+    super.key,
+    required this.onDelete,
+    this.height
+  });
 
   @override
   State<WarningDialog> createState() => _WarningDialogState();
@@ -18,7 +25,7 @@ class _WarningDialogState extends State<WarningDialog> {
       elevation: 0.0,
       backgroundColor: backDrop,
       child: Container(
-        height: 150,
+        height: widget.height?? 150,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8.0),
@@ -30,36 +37,35 @@ class _WarningDialogState extends State<WarningDialog> {
 
 
               Expanded(
-                flex: 10,
+                flex: ((widget.height??150)/10).round()-5,
                 child: Container(
                   // color: Colors.purple,
                   child: Column(
                     children: [
 
-                      Expanded(
-                        child: Container(
-                          height: 45,
-                          width: 45,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: const Icon(
-                            Icons.error_outline_outlined,
-                            size: 35,
-                            color: Colors.white,
-                          ),
-                        )
+                      Container(
+                        height: 45,
+                        width: 45,
+                        decoration: BoxDecoration(
+                          color: lightRed,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Icon(
+                          Icons.error_outline_outlined,
+                          size: 40,
+                          color: Colors.white,
+                        ),
                       ),
 
-                      const Expanded(
+                      Expanded(
+                        flex: 10,
                         child: Center(
                             child: Text(
                               "Are You Sure To Delete!",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
-                                color: Colors.red,
+                                color: lightRed,
                               ),
                             )
                         ),
@@ -70,31 +76,27 @@ class _WarningDialogState extends State<WarningDialog> {
               ),
 
 
-              Expanded(
-                flex: 5,
+              Container(
+                height: 40,
                 child: Row(
                   children: [
-
                     Expanded(
                       child: ReUsableSquareButton(
                         pR: 4,
-                        color: Colors.red,
+                        color: lightRed,
                         textColor: Colors.white,
                         text: "Delete",
-                        onTap: (){
-                          print("Cancel Button Clicked");
-                        },
+                        onTap: widget.onDelete,
                       ),
                     ),
 
                     Expanded(
                       child: ReUsableSquareButton(
                         pL: 4,
-                        color: Colors.greenAccent,
+                        color: lightGreen,
                         textColor: Colors.white,
                         text: "Cancel",
                         onTap: (){
-                          print("Cancel Button Clicked");
                           Navigator.pop(context);
                         },
                       ),

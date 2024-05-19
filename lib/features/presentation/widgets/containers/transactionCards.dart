@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart';
-import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
-import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
+import 'package:finance/config/theme/colors/color_code.dart';
 
 
 class TransactionCards extends StatefulWidget {
-  final int index;
-  final Function(Map<String, dynamic>) actionResponse;
 
   const TransactionCards({
     super.key,
-    required this.index,
-    required this.actionResponse,
   });
 
   @override
@@ -21,82 +14,6 @@ class TransactionCards extends StatefulWidget {
 
 class _TransactionCardsState extends State<TransactionCards> {
 
-  @override
-  Widget build(BuildContext context) {
-    Map<String, dynamic> data = {
-      'action': '',
-      'id': null,
-    };
-
-    return Slidable(
-      // startActionPane: ActionPane(
-      //   motion: const BehindMotion(),
-      //   children: [
-      //     SlidableAction(
-      //         icon: Icons.delete,
-      //         backgroundColor: Colors.red,
-      //         onPressed: (context)=> {
-      //           print(widget.index)
-      //         }
-      //     ),
-      //   ],
-      // ),
-      endActionPane: ActionPane(
-        motion: const BehindMotion(),
-        children: [
-          SlidableAction(
-              icon: Icons.delete,
-              backgroundColor: Colors.red,
-              onPressed: (context) => {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return WarningDialog();
-                  },
-                )
-                // setState(() {
-                //   data['action'] = 'DELETE';
-                //   data['id'] = widget.index;
-                //   return widget.actionResponse(data);
-                // })
-              }
-          ),
-          SlidableAction(
-              icon: Icons.edit,
-              backgroundColor: Colors.green,
-              onPressed: (context)=> {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FromDialog(
-                      child: TransactionAddingForm(),
-                    );
-                  },
-                ),
-                // setState(() {
-                //   data['action'] = 'UPDATE';
-                //   data['id'] = widget.index;
-                //   return widget.actionResponse(data);
-                // })
-              }
-          ),
-        ],
-      ),
-      child: TransactionCardsContent()
-    );
-    // return TransactionCardsContent();
-  }
-}
-
-
-class TransactionCardsContent extends StatefulWidget {
-  const TransactionCardsContent({super.key});
-
-  @override
-  State<TransactionCardsContent> createState() => _TransactionCardsContentState();
-}
-
-class _TransactionCardsContentState extends State<TransactionCardsContent> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -116,14 +33,14 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
               alignment: CrossAxisAlignment.start,
             ),
             CardsRow(
-                headerText: 'Debit',
-                contentText: '50,000',
-                color: Colors.green
+              headerText: 'Debit',
+              contentText: '50,000',
+              color: lightGreen,
             ),
             CardsRow(
-                headerText: 'Credit',
-                contentText: '5,000',
-                color: Colors.red
+              headerText: 'Credit',
+              contentText: '5,000',
+              color: lightRed,
             ),
             CardsRow(
               headerText: 'Balance',
@@ -134,9 +51,9 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
         ),
       ),
     );
+    // return TransactionCardsContent();
   }
 }
-
 
 /* EACH CARDS CONTENT STYLE HERE */
 class CardsRow extends StatelessWidget {

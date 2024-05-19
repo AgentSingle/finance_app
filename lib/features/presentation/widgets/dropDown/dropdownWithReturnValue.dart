@@ -38,7 +38,13 @@ class _dropdownWithReturnValueState extends State<dropdownWithReturnValue> {
       items: widget.dropDownList.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+            ),
+          ),
         );
       }).toList(),
     );

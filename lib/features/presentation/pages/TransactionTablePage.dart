@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
@@ -6,7 +5,7 @@ import 'package:finance/features/presentation/widgets/reUsableButton/circularFlo
 import 'package:finance/features/presentation/widgets/bottomBars/GlobalBottomBar.dart';
 import 'package:finance/features/presentation/widgets/transactionTable/transactionTableRow.dart';
 import 'package:finance/features/presentation/widgets/SearchFilter/transactionFilter.dart';
-
+import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 class TransactionTablePage extends StatefulWidget {
   const TransactionTablePage({super.key});
@@ -41,11 +40,15 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
                   color: Colors.white,
                   border: Border.all(
                     width: 1,
-                    color: Colors.black,
+                    color: blueDeep,
                   ),
                 ),
                 child: const TransactionTableRow(
                   height: 45,
+                  date: "Date",
+                  debit: "Debit",
+                  credit: "Credit",
+                  total: "Balance",
                 ),
               ),
 
@@ -78,8 +81,12 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
                           ),
                         ),
                       ),
-                      child: const TransactionTableRow(
+                      child: TransactionTableRow(
                         height: 35,
+                        date: formatDate(getCurrentDate()),
+                        debit: 1000.toString(),
+                        credit: 450.toString(),
+                        total: 550.toString(),
                       ),
                     );
                   }
@@ -94,7 +101,7 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
                   color: Colors.white,
                   border: Border.all(
                     width: 1,
-                    color: Colors.black,
+                    color: blueDeep,
                   ),
                 ),
                 child: const TransactionTableRow(
@@ -114,6 +121,7 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      extendBody: true,
     );
   }
 }
