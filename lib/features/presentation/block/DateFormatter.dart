@@ -57,13 +57,24 @@ String getMonthName(int month) {
   }
 }
 
-String convertDateFormat(String date) {
+String convertYyMmDd(String date) {
   final parts = date.split('-');
   if (parts.length == 3) {
     final day = parts[0].padLeft(2, '0');
     final month = parts[1].padLeft(2, '0');
     final year = parts[2];
     return '$year-$month-$day';
+  }
+  return date;
+}
+
+String convertDdMmYy(String date) {
+  final parts = date.split('-');
+  if (parts.length == 3) {
+    final day = parts[2].padLeft(2, '0');
+    final month = parts[1].padLeft(2, '0');
+    final year = parts[0];
+    return '$day-$month-$year';
   }
   return date;
 }

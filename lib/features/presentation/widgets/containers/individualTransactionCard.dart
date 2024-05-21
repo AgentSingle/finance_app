@@ -69,31 +69,31 @@ class _IndividualTransactionCardsState extends State<IndividualTransactionCards>
                 // })
               }
           ),
-          SlidableAction(
-              icon: Icons.edit,
-              backgroundColor:lightGreen,
-              onPressed: (context)=> {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FromDialog(
-                      height: 300,
-                      child: TransactionAddingForm(
-                        height: 350,
-                        onSave: (Map<String, dynamic> data){
-                          print(data);
-                        },
-                      ),
-                    );
-                  },
-                ),
-                // setState(() {
-                //   data['action'] = 'UPDATE';
-                //   data['id'] = widget.index;
-                //   return widget.actionResponse(data);
-                // })
-              }
-          ),
+          // SlidableAction(
+          //     icon: Icons.edit,
+          //     backgroundColor:lightGreen,
+          //     onPressed: (context)=> {
+          //       showDialog(
+          //         context: context,
+          //         builder: (BuildContext context) {
+          //           return FromDialog(
+          //             height: 300,
+          //             child: TransactionAddingForm(
+          //               height: 350,
+          //               onSave: (Map<String, dynamic> data){
+          //                 print(data);
+          //               },
+          //             ),
+          //           );
+          //         },
+          //       ),
+          //       // setState(() {
+          //       //   data['action'] = 'UPDATE';
+          //       //   data['id'] = widget.index;
+          //       //   return widget.actionResponse(data);
+          //       // })
+          //     }
+          // ),
         ],
       ),
       child: TransactionCardsContent(
@@ -162,7 +162,7 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
           children: [
             Expanded(
                 child: Text(
-                  '${widget.date?? ''}',
+                  '${formatDate(convertDdMmYy(widget.date!))?? ''}',
                   textAlign: TextAlign.left,
                 )
             ),

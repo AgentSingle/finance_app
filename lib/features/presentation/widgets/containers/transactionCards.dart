@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
+import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 
 class TransactionCards extends StatefulWidget {
 
+  final Map<String, dynamic>? cardsData;
+
   const TransactionCards({
     super.key,
+    this.cardsData,
   });
 
   @override
@@ -23,28 +27,28 @@ class _TransactionCardsState extends State<TransactionCards> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: const Padding(
+      child: Padding(
         padding: EdgeInsets.only(top: 4.0, right: 8.0, bottom: 4.0, left: 8.0),
         child: Row(
           children: [
             CardsRow(
               headerText: 'Date',
-              contentText: '1-july-24',
+              contentText: '${(widget.cardsData!=null)? formatDate(convertDdMmYy(widget.cardsData!['date'])):''}',
               alignment: CrossAxisAlignment.start,
             ),
             CardsRow(
               headerText: 'Debit',
-              contentText: '50,000',
+              contentText: '${(widget.cardsData!=null)? widget.cardsData!['debit']:''}',
               color: lightGreen,
             ),
             CardsRow(
               headerText: 'Credit',
-              contentText: '5,000',
+              contentText: '${(widget.cardsData!=null)? widget.cardsData!['credit']:''}',
               color: lightRed,
             ),
             CardsRow(
               headerText: 'Balance',
-              contentText: '45,000',
+              contentText: '${(widget.cardsData!=null)? widget.cardsData!['balance']:''}',
               alignment: CrossAxisAlignment.end,
             ),
           ],

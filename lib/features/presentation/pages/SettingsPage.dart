@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
+import 'package:finance/features/data/data_sources/dbHelper.dart';
 import 'package:finance/features/presentation/widgets/reUsableButton/circularFloatingButton.dart';
 import 'package:finance/features/presentation/widgets/bottomBars/GlobalBottomBar.dart';
 
@@ -14,6 +15,7 @@ class AppSettingsPage extends StatefulWidget {
 }
 
 class _AppSettingsPageState extends State<AppSettingsPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +48,22 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     ),
                   ],
                 ),
-              )
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: OutlinedButton(
+                  onPressed: () async {
+                    await DbHelper().deleteDB();
+                  },
+                  style: const ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll<Color>(Colors.pinkAccent),
+                    foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+                    side: MaterialStatePropertyAll<BorderSide>(BorderSide(color: Colors.green)),
+                    padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(12.0)),
+                  ),
+                  child: const Text('Delete Database', style: TextStyle(fontSize: 20),),
+                ),
+              ),
             ],
           ),
         ),
