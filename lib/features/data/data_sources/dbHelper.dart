@@ -3,6 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:finance/features/data/models/particular_transaction_model.dart';
+import 'package:finance/features/data/models/date_wise_transaction_model.dart';
+import 'package:finance/features/data/models/financial_report_model.dart';
 import 'dart:io' as io;
 import 'dart:async';
 
@@ -27,7 +29,10 @@ class DbHelper {
     // var db = await openDatabase(path, version: 1, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return db;
   }
-  // CREATE DATABASE
+
+  /* ---------------------------------------------------------------------------
+  CREATE DATABASE
+  ------------------------------------------------------------------------------ */
   _onCreate (Database db, int version) async{
     await db.execute(
       '''CREATE TABLE particular_transaction (id INTEGER PRIMARY KEY AUTOINCREMENT, year INTEGER NOT NULL, date TEXT NOT NULL, amount REAL NOT NULL, balance REAL NOT NULL, payer TEXT)''',
@@ -56,11 +61,50 @@ class DbHelper {
     //   }
     // }
   }
-  // INSERT DATA: insert individual-transaction data into database
+
+/* ========================[APPLY FOR particular_transaction TABLE ]======================== */
+
+  /* ---------------------------------------------
+  INSERT DATA: insert individual-transaction data
+  ------------------------------------------------ */
+  /* INSERT DATA: insert individual-transaction data into database */
   Future<ParticularTransactionModel> insertIndividualTransaction(ParticularTransactionModel particularTransactionModel) async{
+    // Query last item of date-wise-transaction table
+    Map<String, dynamic> data = particularTransactionModel.toJson();
+    String date = data['date'].toString();
+    List<DateWiseTransactionModel> lastDateWiseTransaction = await queryDateWiseItemsBetweenDates(date, date);
+    if (lastDateWiseTransaction.isEmpty){
+      insertDateWiseTransaction(
+        DateWiseTransactionModel(
+          year: data['year'],
+          date: data['date'],
+          debit: (data['amount']>=0)?data['amount']:0,
+          credit: (data['amount']<0)?data['amount']:0,
+          balance: data['balance'],
+        )
+      ).then((value) => null).onError((error, stackTrace) => null);
+    }
+    else{
+      DateWiseTransactionModel existedItem = lastDateWiseTransaction.first;
+      double newDebt = (data['amount']>=0)?data['amount']:0.0;
+      double newCredit = (data['amount']<0)?data['amount']:0.0;
+      DateWiseTransactionModel updateTo = DateWiseTransactionModel(
+        id: existedItem.id,
+        year: existedItem.year,
+        date: existedItem.date,
+        debit: existedItem.debit + newDebt,
+        credit: existedItem.credit + newCredit,
+        balance: existedItem.balance + data['amount'],
+      );
+      updateDateWiseTransaction(updateTo)
+      .then((value) => null)
+      .onError((error, stackTrace) => null);
+    }
+
+
     try {
       var dbClint = await db;
-      await dbClint!.insert('particular_transaction', particularTransactionModel.toJson());
+      await dbClint!.insert('particular_transaction', data);
     }
     catch(error){
       if (error is DatabaseException) {
@@ -70,25 +114,43 @@ class DbHelper {
         // Handle other errors here.
       }
     }
-    print(particularTransactionModel.toJson());
     return particularTransactionModel;
   }
 
-  // QUERY DATA: query DB to get data
-  Future<List<ParticularTransactionModel>> getParticularTransactionList () async {
+  /* ----------------------------------------------------------------
+  QUERY DATA: query DB to get data from particular transaction table
+  ------------------------------------------------------------------- */
+  Future<List<ParticularTransactionModel>> getParticularTransactionList() async {
     var dbClient = await db;
     final List<Map<String, Object?>> queryResult = await dbClient!.query('particular_transaction');
     return queryResult.map((Map<String, dynamic> map) => ParticularTransactionModel.fromJson(map)).toList();
   }
 
-  // Future<int> updateProduct(ProductModel updatedProduct) async{
+  /* ---------------------------------------------------------------------------------
+  QUERY DATA: According to date here we filter data from particular transaction table
+  -------------------------------------------------- --------------------------------- */
+  Future<List<ParticularTransactionModel>> queryItemsBetweenDates(String startDate, String endDate) async {
+    final dbClient = await db;
+    final List<Map<String, Object?>> queryResult = await dbClient!.query(
+      'particular_transaction',
+      where: 'date BETWEEN ? AND ?',
+      whereArgs: [startDate, endDate],
+      orderBy: 'date ASC', // Change to 'date DESC' for descending order
+    );
+    return queryResult.map((Map<String, dynamic> map) => ParticularTransactionModel.fromJson(map)).toList();
+  }
+
+  /* ------------------------------------------
+  UPDATE DATA: in particular transaction table
+  --------------------------------------------- */
+  // Future<int> updateIndividualTransaction(ParticularTransactionModel updatedTransaction) async{
   //   try {
   //     var dbClient = await db;
   //     return await dbClient!.update(
-  //       'finance',
-  //       updatedProduct.toJson(),
+  //       'particular_transaction',
+  //       updatedTransaction.toJson(),
   //       where: 'id = ?',
-  //       whereArgs: [updatedProduct.id],
+  //       whereArgs: [updatedTransaction.id],
   //     );
   //   } catch (error) {
   //     if (error is DatabaseException) {
@@ -98,24 +160,111 @@ class DbHelper {
   //     }
   //   }
   // }
-  //
-  // DELETE DATA: query database according to id and delete Individual-transaction data
+
+
+  /* --------------------------------------------------------------------------------
+  DELETE DATA: query database according to id and delete Individual-transaction data
+  ----------------------------------------------------------------------------------- */
   Future<int> deleteIndividualTransaction(int id) async{
     var dbClient = await db;
     return await dbClient!.delete('particular_transaction', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<ParticularTransactionModel>> queryItemsBetweenDates(String startDate, String endDate) async {
-    // print('Query Start $startDate');
-    // print('Query end $endDate');
+
+/* ========================[APPLY FOR date_wise_transaction TABLE ]======================== */
+
+  /* ---------------------------------------------
+  INSERT DATA: insert date-wise-transaction data
+  ------------------------------------------------ */
+  /* INSERT DATA: insert individual-transaction data into database */
+  Future<DateWiseTransactionModel> insertDateWiseTransaction(DateWiseTransactionModel dateWiseTransactionModel) async{
+    try {
+      var dbClint = await db;
+      await dbClint!.insert('date_wise_transactions', dateWiseTransactionModel.toJson());
+    }
+    catch(error){
+      if (error is DatabaseException) {
+        print('database error');
+      } else {
+        print('other exception');
+        // Handle other errors here.
+      }
+    }
+    print('helloworld');
+    return dateWiseTransactionModel;
+  }
+
+  /* ---------------------------------------------------------------------------------
+  QUERY DATA: According to date here we filter data from particular transaction table
+  -------------------------------------------------- --------------------------------- */
+  Future<List<DateWiseTransactionModel>> queryDateWiseItemsBetweenDates(String startDate, String endDate) async {
     final dbClient = await db;
     final List<Map<String, Object?>> queryResult = await dbClient!.query(
-      'particular_transaction',
+      'date_wise_transactions',
       where: 'date BETWEEN ? AND ?',
       whereArgs: [startDate, endDate],
       orderBy: 'date ASC', // Change to 'date DESC' for descending order
     );
-    return queryResult.map((Map<String, dynamic> map) => ParticularTransactionModel.fromJson(map)).toList();
+    return queryResult.map((Map<String, dynamic> map) => DateWiseTransactionModel.fromJson(map)).toList();
+  }
+
+  /* ------------------------------------------
+  UPDATE DATA: in particular transaction table
+  --------------------------------------------- */
+  Future<int> updateDateWiseTransaction(DateWiseTransactionModel updatedTransaction) async{
+    try {
+      var dbClient = await db;
+      return await dbClient!.update(
+        'date_wise_transactions',
+        updatedTransaction.toJson(),
+        where: 'id = ?',
+        whereArgs: [updatedTransaction.id],
+      );
+    } catch (error) {
+      if (error is DatabaseException) {
+        return -1; // Return an error code or handle the error as needed.
+      } else {
+        return -1; // Return an error code or handle the error as needed.
+      }
+    }
+  }
+
+
+/* ========================[APPLY FOR financial_report TABLE ]======================== */
+
+  /* ---------------------------------------------
+  INSERT DATA: insert financial_report data
+  ------------------------------------------------ */
+  /* INSERT DATA: insert individual-transaction data into database */
+  Future<FinancialReportModel> insertFinancialReport(FinancialReportModel financialReportModel) async{
+    try {
+      var dbClint = await db;
+      await dbClint!.insert('date_wise_transactions', financialReportModel.toJson());
+    }
+    catch(error){
+      if (error is DatabaseException) {
+        print('database error');
+      } else {
+        print('other exception');
+        // Handle other errors here.
+      }
+    }
+    return financialReportModel;
+  }
+
+/* ========================[ APPLY FOR ALL TABLE ]======================== */
+  /* QUERY DATA: Get Last Item From a Table */
+  Future<Map<String, dynamic>?> getLastItem(String tableName) async {
+    final dbClient = await db;
+    final List<Map<String, dynamic>> queryResult = await dbClient!.query(
+      tableName,
+      orderBy: 'id DESC',
+      limit: 1,
+    );
+    if (queryResult.isNotEmpty) {
+      return queryResult.first;
+    }
+    return null;
   }
 
   // // BACKUP DATABASE
@@ -168,17 +317,17 @@ class DbHelper {
   //   }
   // }
   //
-  // deleteDB() async {
-  //   try {
-  //     _db = null;
-  //     io.Directory documentDirectory = await getApplicationDocumentsDirectory();
-  //     String path = join(documentDirectory.path, 'finance.db');
-  //     deleteDatabase(path);
-  //   }
-  //   catch(e){
-  //     print("DB Delete Error: ${e.toString()}");
-  //   }
-  // }
+  deleteDB() async {
+    try {
+      _db = null;
+      io.Directory documentDirectory = await getApplicationDocumentsDirectory();
+      String path = join(documentDirectory.path, 'finance.db');
+      deleteDatabase(path);
+    }
+    catch(e){
+      print("DB Delete Error: ${e.toString()}");
+    }
+  }
   //
   // getStoragePath() async{
   //   String databasePath = await getDatabasesPath();

@@ -40,7 +40,7 @@ class _DateSelectorState extends State<DateSelector> {
       givenDate = formatDate(getDate);
     });
     if(widget.responseDate!=null){
-      return widget.responseDate!(convertDateFormat(getDate));
+      return widget.responseDate!(convertYyMmDd(getDate));
     }
   }
 

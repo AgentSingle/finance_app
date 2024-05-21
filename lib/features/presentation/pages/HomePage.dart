@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
@@ -11,10 +9,11 @@ import 'package:finance/features/presentation/widgets/containers/individualTrans
 import 'package:finance/features/presentation/widgets/SearchFilter/individualTransactionFilter.dart';
 import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
 import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
+import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 import 'package:finance/features/data/data_sources/dbHelper.dart';
 import 'package:finance/features/data/models/particular_transaction_model.dart';
-import 'package:finance/features/presentation/block/DateFormatter.dart';
+import 'package:finance/features/data/models/date_wise_transaction_model.dart';
 
 
 
@@ -26,40 +25,60 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String startDate = convertDateFormat(getPreviousDate(31));
-  String endDate = convertDateFormat(getPreviousDate(0));
+  String startDate = convertYyMmDd(getPreviousDate(31));
+  String endDate = convertYyMmDd(getPreviousDate(0));
 
   //DATABASE RELATED JOB
   DbHelper? dbHelper;
   late Future<List<ParticularTransactionModel>> particularTransactionList;
+  Map<String, dynamic> toDaysTransaction = {
+    'year': '2024',
+    'date': '2024-10-19',
+    'debit': 0,
+    'credit': 0,
+    'balance': 0,
+  };
 
   @override
   void initState() {
     super.initState();
     dbHelper = DbHelper();
     loadData(startDate, endDate);
+    loadToDaysTransaction();
   }
 
   loadData(String start, String end) async {
     particularTransactionList = dbHelper!.queryItemsBetweenDates(start, end);
   }
 
-  void insertTransaction(Map<String, dynamic> data){
-    print(data);
+  loadToDaysTransaction() async {
+    List<DateWiseTransactionModel> toDaysTransactions = await dbHelper!.queryDateWiseItemsBetweenDates(endDate, endDate);
+    if (toDaysTransactions.isNotEmpty){
+      setState(() {
+        toDaysTransaction = toDaysTransactions.first.toJson();
+      });
+    }
+  }
+
+  void insertTransaction(Map<String, dynamic> data) async {
+    final lastItem = await dbHelper!.getLastItem('particular_transaction');
+    if (lastItem != null) {
+      data['balance'] = lastItem['balance'] + data['amount'];
+    } else {
+      data['balance'] = data['amount'];
+    }
     dbHelper!.insertIndividualTransaction(
       ParticularTransactionModel(
         year: DateTime.now().year.toInt(),
         date: data['date'],
         amount: data['amount'],
-        balance: 5000,
+        balance: data['balance'],
         payer: null,
       ),
     ).then((value){
-      print("Success");
-      // loadData(startDate, endDate);
       setState(() {
-        // particularTransactionList = dbHelper!.getParticularTransactionList();
         loadData(startDate, endDate);
+        loadToDaysTransaction();
       });
     }).onError((error, stackTrace){
       print(error.toString());
@@ -148,7 +167,9 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   width: MediaQuery.of(context).size.width - 16,
                   height: 55,
-                  child: TransactionCards(),
+                  child: TransactionCards(
+                    cardsData: toDaysTransaction,
+                  ),
                 ),
               ],
             ),
