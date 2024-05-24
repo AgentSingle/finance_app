@@ -3,15 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
 import 'package:finance/features/presentation/pages/HomePage.dart';
+import 'package:finance/features/presentation/pages/TransactionTablePage.dart';
+import 'package:finance/features/presentation/pages/FullTransactionListPage.dart';
 
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: blueSecondary,
-    statusBarIconBrightness: Brightness.dark,
+    statusBarColor: blueDeep,
+    statusBarIconBrightness: Brightness.light,
     systemNavigationBarColor: blueDeep,
     systemNavigationBarDividerColor: Colors.transparent,
-    systemNavigationBarIconBrightness: Brightness.dark,
+    systemNavigationBarIconBrightness: Brightness.light,
   ));
   runApp(const MyApp());
 }
@@ -35,6 +37,8 @@ class MyApp extends StatelessWidget {
         body: SafeArea(
           child: appBackgroundContainer(
             child: HomePage(),
+            // child: TransactionTablePage(),
+            // child: FullTransactionListPage(),
           ),
         ),
       ),

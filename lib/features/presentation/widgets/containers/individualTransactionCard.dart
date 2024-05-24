@@ -6,11 +6,11 @@ import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart'
 import 'package:finance/features/presentation/widgets/popUps/fromDialog.dart';
 import 'package:finance/features/presentation/widgets/froms/transactionAddForm.dart';
 import 'package:finance/features/presentation/block/DateFormatter.dart';
-import 'package:finance/features/presentation/block/temporary.dart';
 
 
 class IndividualTransactionCards extends StatefulWidget {
   final int index;
+  final int year;
   final String? date;
   final double? amount;
   final double? balance;
@@ -19,6 +19,7 @@ class IndividualTransactionCards extends StatefulWidget {
   const IndividualTransactionCards({
     super.key,
     required this.index,
+    required this.year,
     required this.actionResponse,
     this.date,
     this.amount,
@@ -55,6 +56,9 @@ class _IndividualTransactionCardsState extends State<IndividualTransactionCards>
                         setState(() {
                           data['action'] = 'DELETE';
                           data['id'] = widget.index;
+                          data['year'] = widget.year;
+                          data['date'] = widget.date;
+                          data['amount'] = widget.amount;
                         });
                         Navigator.pop(context);
                         return widget.actionResponse(data);
@@ -185,7 +189,7 @@ class _TransactionCardsContentState extends State<TransactionCardsContent> {
             ),
             Expanded(
                 child: Text(
-                    '${widget.balance?? ''}',
+                  '${widget.balance?? ''}',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,

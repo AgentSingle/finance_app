@@ -34,19 +34,19 @@ class _BorderDecoratedContainerState extends State<BorderDecoratedContainer> {
         color: Colors.white,
         border: Border(
           top: BorderSide(
-            color: blueDeep,
+            color: Colors.black,
             width: widget.tB?? 0,
           ),
           right: BorderSide(
-            color: blueDeep,
+            color: Colors.black,
             width: widget.rB?? 0,
           ),
           bottom: BorderSide(
-            color: blueDeep,
+            color: Colors.black,
             width: widget.bB?? 0,
           ),
           left: BorderSide(
-            color: blueDeep,
+            color: Colors.black,
             width: widget.lB?? 0,
           )
         )
