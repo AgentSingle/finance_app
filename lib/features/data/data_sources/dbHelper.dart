@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -35,13 +37,13 @@ class DbHelper {
   ------------------------------------------------------------------------------ */
   _onCreate (Database db, int version) async{
     await db.execute(
-      '''CREATE TABLE particular_transaction (id INTEGER PRIMARY KEY AUTOINCREMENT, year INTEGER NOT NULL, date TEXT NOT NULL, amount REAL NOT NULL, balance REAL NOT NULL, payer TEXT)''',
+      '''CREATE TABLE particular_transaction (id INTEGER PRIMARY KEY AUTOINCREMENT, year INTEGER NOT NULL, date TEXT NOT NULL, amount REAL NOT NULL, payer TEXT)''',
     );
     await db.execute(
       '''CREATE TABLE date_wise_transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, year INTEGER NOT NULL, date TEXT NOT NULL, debit REAL NOT NULL, credit REAL NOT NULL, balance REAL NOT NULL)''',
     );
     await db.execute(
-        '''CREATE TABLE financial_report (id INTEGER PRIMARY KEY AUTOINCREMENT, year INTEGER NOT NULL, total_debit REAL NOT NULL, total_credit REAL NOT NULL)''',
+        '''CREATE TABLE financial_report (id INTEGER PRIMARY KEY AUTOINCREMENT, year INTEGER NOT NULL, debit REAL NOT NULL, credit REAL NOT NULL)''',
     );
   }
 
@@ -69,10 +71,13 @@ class DbHelper {
   ------------------------------------------------ */
   /* INSERT DATA: insert individual-transaction data into database */
   Future<ParticularTransactionModel> insertIndividualTransaction(ParticularTransactionModel particularTransactionModel) async{
+
     // Query last item of date-wise-transaction table
     Map<String, dynamic> data = particularTransactionModel.toJson();
     String date = data['date'].toString();
     List<DateWiseTransactionModel> lastDateWiseTransaction = await queryDateWiseItemsBetweenDates(date, date);
+    List<FinancialReportModel> financialYearReport = await queryFinancialReport(data['year']);
+
     if (lastDateWiseTransaction.isEmpty){
       insertDateWiseTransaction(
         DateWiseTransactionModel(
@@ -80,7 +85,7 @@ class DbHelper {
           date: data['date'],
           debit: (data['amount']>=0)?data['amount']:0,
           credit: (data['amount']<0)?data['amount']:0,
-          balance: data['balance'],
+          balance: data['amount'],
         )
       ).then((value) => null).onError((error, stackTrace) => null);
     }
@@ -99,6 +104,30 @@ class DbHelper {
       updateDateWiseTransaction(updateTo)
       .then((value) => null)
       .onError((error, stackTrace) => null);
+    }
+
+    if (financialYearReport.isEmpty){
+      insertFinancialReport(
+        FinancialReportModel(
+          year: data['year'],
+          debit: (data['amount']>=0)?data['amount']:0,
+          credit: (data['amount']<0)?data['amount']:0,
+        )
+      ).then((value) => null).onError((error, stackTrace) => null);
+    }
+    else{
+      FinancialReportModel existedItem = financialYearReport.first;
+      double newDebt = (data['amount']>=0)?data['amount']:0.0;
+      double newCredit = (data['amount']<0)?data['amount']:0.0;
+      FinancialReportModel updateTo = FinancialReportModel(
+        id: existedItem.id,
+        year: existedItem.year,
+        debit: existedItem.debit + newDebt,
+        credit: existedItem.credit + newCredit,
+      );
+      updateFinancialReport(
+          updateTo
+      ).then((value) => null).onError((error, stackTrace) => null);
     }
 
 
@@ -165,8 +194,56 @@ class DbHelper {
   /* --------------------------------------------------------------------------------
   DELETE DATA: query database according to id and delete Individual-transaction data
   ----------------------------------------------------------------------------------- */
-  Future<int> deleteIndividualTransaction(int id) async{
+  Future<int> deleteIndividualTransaction(int id, int year, String date, double amount) async{
     var dbClient = await db;
+
+    List<DateWiseTransactionModel> lastDateWiseTransaction = await queryDateWiseItemsBetweenDates(date, date);
+    List<FinancialReportModel> financialYearReport = await queryFinancialReport(year);
+    DateWiseTransactionModel existedItem = lastDateWiseTransaction.first;
+    FinancialReportModel existedReportItem = financialYearReport.first;
+    double newDebt = (amount>=0)?amount:0.0;
+    double newCredit = (amount<0)?amount:0.0;
+
+    // FOR DATE-WISE TRANSACTIONAL TABLE
+    double dDebit = existedItem.debit - newDebt;
+    double dCredit = existedItem.credit - newCredit;
+    double dBalance = existedItem.balance - amount;
+
+    if(dDebit==0 && dCredit ==0 && dBalance==0){
+      deleteDateWiseTransaction(existedItem.id!);
+    }
+    else{
+      DateWiseTransactionModel dateWiseTransactionUpdateTo = await DateWiseTransactionModel(
+        id: existedItem.id,
+        year: existedItem.year,
+        date: existedItem.date,
+        debit: existedItem.debit - newDebt,
+        credit: existedItem.credit - newCredit,
+        balance: existedItem.balance - amount,
+      );
+      updateDateWiseTransaction(
+          dateWiseTransactionUpdateTo
+      ).then((value) => null).onError((error, stackTrace) => null);
+    }
+
+    // FOR FINANCIAL TABLE
+    double fiDebit = existedReportItem.debit - newDebt;
+    double fiCredit = existedReportItem.credit - newCredit;
+    if(fiCredit==0 && fiDebit ==0){
+      deleteFinancialReport(existedReportItem.year);
+    }
+    else{
+      FinancialReportModel financialReportUpdateTo = await FinancialReportModel(
+        id: existedReportItem.id,
+        year: existedReportItem.year,
+        debit: existedReportItem.debit - newDebt,
+        credit: existedReportItem.credit - newCredit,
+      );
+      updateFinancialReport(
+          financialReportUpdateTo
+      ).then((value) => null).onError((error, stackTrace) => null);
+    }
+
     return await dbClient!.delete('particular_transaction', where: 'id = ?', whereArgs: [id]);
   }
 
@@ -184,7 +261,7 @@ class DbHelper {
     }
     catch(error){
       if (error is DatabaseException) {
-        print('database error');
+        print('database error in date wise table');
       } else {
         print('other exception');
         // Handle other errors here.
@@ -229,6 +306,14 @@ class DbHelper {
     }
   }
 
+  /* ------------------------------------------
+  DELETE DATA: in particular transaction table
+  --------------------------------------------- */
+  Future<int> deleteDateWiseTransaction(int id) async{
+    var dbClient = await db;
+    return await dbClient!.delete('date_wise_transactions', where: 'id = ?', whereArgs: [id]);
+  }
+
 
 /* ========================[APPLY FOR financial_report TABLE ]======================== */
 
@@ -239,11 +324,11 @@ class DbHelper {
   Future<FinancialReportModel> insertFinancialReport(FinancialReportModel financialReportModel) async{
     try {
       var dbClint = await db;
-      await dbClint!.insert('date_wise_transactions', financialReportModel.toJson());
+      await dbClint!.insert('financial_report', financialReportModel.toJson());
     }
     catch(error){
       if (error is DatabaseException) {
-        print('database error');
+        print('database error in financial report table');
       } else {
         print('other exception');
         // Handle other errors here.
@@ -251,6 +336,61 @@ class DbHelper {
     }
     return financialReportModel;
   }
+
+  /* ------------------------------------------
+  UPDATE DATA: financial-report table
+  --------------------------------------------- */
+  Future<int> updateFinancialReport(FinancialReportModel updatedReportModel) async {
+    try {
+      var dbClient = await db;
+      return await dbClient!.update(
+        'financial_report',
+        updatedReportModel.toJson(),
+        where: 'id = ?',
+        whereArgs: [updatedReportModel.id],
+      );
+    } catch (error) {
+      if (error is DatabaseException) {
+        return -1; // Return an error code or handle the error as needed.
+      } else {
+        return -1; // Return an error code or handle the error as needed.
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------------------------
+  QUERY DATA: According to date here we filter data from financial report
+  -------------------------------------------------- --------------------------------- */
+  Future<List<FinancialReportModel>> queryFinancialReport(int year) async {
+    final dbClient = await db;
+    final List<Map<String, Object?>> queryResult = await dbClient!.query(
+      'financial_report',
+      where: 'year = ?',
+      whereArgs: [year],
+      orderBy: 'id DESC', // Change to 'date DESC' for descending order
+    );
+    return queryResult.map((Map<String, dynamic> map) => FinancialReportModel.fromJson(map)).toList();
+  }
+
+  /* ---------------------------------------------------------------------------------
+  QUERY DATA: According to date here we filter data from particular transaction table
+  -------------------------------------------------- --------------------------------- */
+  Future<List<FinancialReportModel>> queryFinancialReportBetweenYears(int startYear, int endYear) async {
+    final dbClient = await db;
+    final List<Map<String, Object?>> queryResult = await dbClient!.query(
+      'financial_report',
+      where: 'year BETWEEN ? AND ?',
+      whereArgs: [startYear, endYear],
+      orderBy: 'year DESC', // Change to 'date DESC' for descending order
+    );
+    return queryResult.map((Map<String, dynamic> map) => FinancialReportModel.fromJson(map)).toList();
+  }
+
+  Future<int> deleteFinancialReport(int year) async{
+    var dbClient = await db;
+    return await dbClient!.delete('financial_report', where: 'year = ?', whereArgs: [year]);
+  }
+
 
 /* ========================[ APPLY FOR ALL TABLE ]======================== */
   /* QUERY DATA: Get Last Item From a Table */

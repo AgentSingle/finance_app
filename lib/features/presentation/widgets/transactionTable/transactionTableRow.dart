@@ -6,6 +6,7 @@ class TransactionTableRow extends StatefulWidget {
   final String? debit;
   final String? credit;
   final String? total;
+  final FontWeight? fontWeight;
 
   final double height;
 
@@ -16,6 +17,7 @@ class TransactionTableRow extends StatefulWidget {
     this.credit,
     this.total,
     required this.height,
+    this.fontWeight,
   });
 
   @override
@@ -32,7 +34,11 @@ class _TransactionTableRowState extends State<TransactionTableRow> {
             height: widget.height,
             rB: 1,
             child: Center(
-                child: Text('${widget.date}')
+                child: Text('${widget.date}',
+                  style: TextStyle(
+                    fontWeight: widget.fontWeight?? FontWeight.normal,
+                  ),
+                )
             ),
           ),
         ),
@@ -41,7 +47,12 @@ class _TransactionTableRowState extends State<TransactionTableRow> {
             height: widget.height,
             rB: 1,
             child: Center(
-                child: Text('${widget.debit}')
+                child: Text(
+                  '${widget.debit}',
+                  style: TextStyle(
+                    fontWeight: widget.fontWeight?? FontWeight.normal,
+                  ),
+                )
             ),
           ),
         ),
@@ -50,7 +61,12 @@ class _TransactionTableRowState extends State<TransactionTableRow> {
             height: widget.height,
             rB: 1,
             child: Center(
-                child: Text('${widget.credit}')
+                child: Text(
+                  '${widget.credit}',
+                  style: TextStyle(
+                    fontWeight: widget.fontWeight?? FontWeight.normal,
+                  ),
+                )
             ),
           ),
         ),
@@ -58,7 +74,12 @@ class _TransactionTableRowState extends State<TransactionTableRow> {
           child: BorderDecoratedContainer(
             height: widget.height,
             child: Center(
-                child: Text('${widget.total}')
+                child: Text(
+                  '${widget.total}',
+                  style: TextStyle(
+                    fontWeight: widget.fontWeight?? FontWeight.normal,
+                  ),
+                )
             ),
           ),
         ),

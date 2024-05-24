@@ -1,3 +1,7 @@
+int startYear(){
+  return 2024;
+}
+
 String getCurrentDate(){
   DateTime currentDate = DateTime.now();
   String currentDateString = "${currentDate.day}-${currentDate.month}-${currentDate.year}";

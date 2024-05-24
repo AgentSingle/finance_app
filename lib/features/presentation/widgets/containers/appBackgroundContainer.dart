@@ -21,8 +21,8 @@ class _appBackgroundContainerState extends State<appBackgroundContainer> {
       height: MediaQuery.of(context).size.height,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [blueSecondary, bluePrimary],
-          stops: [0.25, 0.75],
+          colors: [blueDeep, blueSecondary],
+          stops: [0.20, 0.90],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
