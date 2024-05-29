@@ -199,14 +199,16 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
       floatingActionButton: CircularFloatingButton(
         iconData: Icons.share_rounded,
         onPressed: () async {
-          print("Share Transaction");
 
           showModalBottomSheet(
             context: context,
             builder: (BuildContext context) {
               return GenerateXlsx(
-                  transactionData: dataForXlsx,
-                  transactionSum: d1TOd2Transaction,
+                transactionData: dataForXlsx,
+                transactionSum: d1TOd2Transaction,
+                action: (){
+                  Navigator.pop(context);
+                },
               );
             },
           );

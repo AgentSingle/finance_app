@@ -36,7 +36,7 @@ dependencies:
   permission_handler: "^11.3.1"
   path_provider: "^2.1.3"
   # for file sharing purpose
-#  share_plus: "^9.0.0"
+  share_plus: "^9.0.0"
   http: "^1.2.1"
   # import data to XLSX
   excel: "^4.0.3"
