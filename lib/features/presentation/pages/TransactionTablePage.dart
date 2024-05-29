@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:share_plus/share_plus.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/features/presentation/widgets/containers/containerWithBGI.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
@@ -6,6 +7,7 @@ import 'package:finance/features/presentation/widgets/reUsableButton/circularFlo
 import 'package:finance/features/presentation/widgets/bottomBars/GlobalBottomBar.dart';
 import 'package:finance/features/presentation/widgets/transactionTable/transactionTableRow.dart';
 import 'package:finance/features/presentation/widgets/SearchFilter/transactionFilter.dart';
+import 'package:finance/features/presentation/widgets/xlsxGen/generateXlsx.dart';
 import 'package:finance/features/presentation/block/DateFormatter.dart';
 
 import 'package:finance/features/data/data_sources/dbHelper.dart';
@@ -29,6 +31,7 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
   //DATABASE RELATED JOB
   DbHelper? dbHelper;
   late Future<List<PTModelWithBalance>> individualTransactionList = Future.value([]);
+  late List<Map<String, dynamic>> dataForXlsx;
   Map<String, dynamic> d1TOd2Transaction = {
     'debit': 0,
     'credit': 0,
@@ -46,6 +49,7 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
     List<ParticularTransactionModel> data = await dbHelper!.queryItemsBetweenDates(start, end);
     List<Map<String, dynamic>> mapData = (data.map((e) => e.toJson())).toList();
     final List<Map<String, dynamic>> newData = calculateBalance(mapData);
+    dataForXlsx = newData;
     final modelList = newData.map(convertMapToModel).toList();
     setState(() {
       individualTransactionList = Future.value(modelList);
@@ -194,8 +198,19 @@ class _TransactionTablePageState extends State<TransactionTablePage> {
       bottomNavigationBar: const GlobalBottomBar(),
       floatingActionButton: CircularFloatingButton(
         iconData: Icons.share_rounded,
-        onPressed: (){
+        onPressed: () async {
           print("Share Transaction");
+
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return GenerateXlsx(
+                  transactionData: dataForXlsx,
+                  transactionSum: d1TOd2Transaction,
+              );
+            },
+          );
+          // await Share.share('Hello Finance');
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
