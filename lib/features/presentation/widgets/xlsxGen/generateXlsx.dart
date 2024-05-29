@@ -4,16 +4,19 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'dart:io' as io;
+import 'package:share_plus/share_plus.dart';
 
 
 class GenerateXlsx extends StatefulWidget {
   final List<Map<String, dynamic>> transactionData;
   final Map<String, dynamic> transactionSum;
+  final VoidCallback action;
 
   const GenerateXlsx({
     super.key,
     required this.transactionData,
     required this.transactionSum,
+    required this.action,
   });
 
   @override
@@ -131,6 +134,18 @@ class _GenerateXlsxState extends State<GenerateXlsx> {
         setState(() {
           message='Save Success';
         });
+
+        // ========[ IF FILE SAVE SUCCESS THAN WE SHARE THIS FILE USING SHARE-PLUS ]========
+        // final result = await Share.shareXFiles([XFile('${documentDirectory.path}financeData.xlsx')], text: 'Great picture');
+        final result = await Share.shareXFiles([XFile('/storage/emulated/0/FinanceStorage/Share/financeData.xlsx')]);
+
+        if (result.status == ShareResultStatus.success) {
+          setState(() {
+            message='Share Success.';
+            return widget.action();
+          });
+        }
+
       } else {
         setState(() {
           message='Error saving Excel file: fileBytes is null';
@@ -139,7 +154,7 @@ class _GenerateXlsxState extends State<GenerateXlsx> {
     }
     catch(e){
       setState(() {
-        message='"DB Backup Error: ${e.toString()}"';
+        message = "File Path Error: ${e.toString()}";
       });
     }
   }
@@ -147,7 +162,7 @@ class _GenerateXlsxState extends State<GenerateXlsx> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 100,
       width: MediaQuery.of(context).size.width,
       child: Center(
           child: Text('$message')

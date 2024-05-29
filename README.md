@@ -3,7 +3,7 @@
 ### Flutter 3.19.6
 ### Tools • Dart 3.3.4 • DevTools 2.31.1
 ```command
-flutter build apk --build-name=0.5.6 --build-number=56
+flutter build apk --build-name=0.5.9 --build-number=59
 ```
 
 ## Getting Started
