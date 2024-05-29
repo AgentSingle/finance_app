@@ -407,56 +407,57 @@ class DbHelper {
     return null;
   }
 
-  // // BACKUP DATABASE
-  // backupDB() async{
-  //   // var status = await Permission.manageExternalStorage.status;
-  //   var status = await Permission.storage.status;
-  //   print(status);
-  //   if (!status.isGranted){
-  //     await Permission.manageExternalStorage.request();
-  //   }
-  //   var status1 = await Permission.storage.status;
-  //
-  //   if(!status1.isGranted){
-  //     await Permission.storage.request();
-  //   }
-  //   try {
-  //     io.Directory documentDirectory = await getApplicationDocumentsDirectory();
-  //     print(documentDirectory.path);
-  //     String path = join(documentDirectory.path, 'finance.db');
-  //     io.File ourDBFile = io.File( path);
-  //     io.Directory ? folderPathForDBFile = io.Directory("/storage/emulated/0/FinanceDatabase/");
-  //     await folderPathForDBFile.create();
-  //     await ourDBFile.copy("/storage/emulated/0/FinanceDatabase/finance.db");
-  //   }
-  //   catch(e){
-  //     print("DB Backup Error: ${e.toString()}");
-  //   }
-  // }
-  //
-  // restoreDB() async{
-  //   var status = await Permission.manageExternalStorage.status;
-  //   if (!status.isGranted){
-  //     await Permission.manageExternalStorage.request();
-  //   }
-  //   var status1 = await Permission.storage.status;
-  //
-  //   if(!status1.isGranted){
-  //     await Permission.storage.request();
-  //   }
-  //   try{
-  //     io.Directory documentDirectory = await getApplicationDocumentsDirectory();
-  //     String path = join(documentDirectory.path, 'finance.db');
-  //     io.File saveDBFile = io.File(
-  //         "/storage/emulated/0/FinanceDatabase/finance.db"
-  //     );
-  //     await saveDBFile.copy(path);
-  //   }
-  //   catch(e){
-  //     print("DB Restore Error: ${e.toString()}");
-  //   }
-  // }
-  //
+  // BACKUP DATABASE
+  backupDB() async{
+    // var status = await Permission.manageExternalStorage.status;
+    var status = await Permission.storage.status;
+    // print(status);
+    if (!status.isGranted){
+      await Permission.manageExternalStorage.request();
+    }
+    var status1 = await Permission.storage.status;
+
+    if(!status1.isGranted){
+      await Permission.storage.request();
+    }
+    try {
+      io.Directory documentDirectory = await getApplicationDocumentsDirectory();
+      String path = join(documentDirectory.path, 'finance.db');
+      io.File ourDBFile = io.File( path);
+      io.Directory ? folderPathForDBFile = io.Directory("/storage/emulated/0/FinanceStorage/");
+      await folderPathForDBFile.create();
+      io.Directory ? folderPathForDBBackup = io.Directory("/storage/emulated/0/FinanceStorage/Backup/");
+      await folderPathForDBBackup.create();
+      await ourDBFile.copy("/storage/emulated/0/FinanceStorage/Backup/finance.db");
+    }
+    catch(e){
+      print("DB Backup Error: ${e.toString()}");
+    }
+  }
+
+  restoreDB() async{
+    var status = await Permission.manageExternalStorage.status;
+    if (!status.isGranted){
+      await Permission.manageExternalStorage.request();
+    }
+    var status1 = await Permission.storage.status;
+
+    if(!status1.isGranted){
+      await Permission.storage.request();
+    }
+    try{
+      io.Directory documentDirectory = await getApplicationDocumentsDirectory();
+      String path = join(documentDirectory.path, 'finance.db');
+      io.File saveDBFile = io.File(
+          "/storage/emulated/0/FinanceStorage/Backup/finance.db"
+      );
+      await saveDBFile.copy(path);
+    }
+    catch(e){
+      print("DB Restore Error: ${e.toString()}");
+    }
+  }
+
   deleteDB() async {
     try {
       _db = null;

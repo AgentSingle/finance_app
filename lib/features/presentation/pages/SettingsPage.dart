@@ -1,12 +1,13 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:finance/features/presentation/widgets/reUsableButton/IconWithTextButton.dart';
 import 'package:finance/features/presentation/widgets/containers/appBackgroundContainer.dart';
 import 'package:finance/config/theme/colors/color_code.dart';
 import 'package:finance/features/data/data_sources/dbHelper.dart';
 import 'package:finance/features/presentation/widgets/reUsableButton/circularFloatingButton.dart';
 import 'package:finance/features/presentation/widgets/bottomBars/GlobalBottomBar.dart';
-import 'package:flutter/rendering.dart';
+import 'package:finance/features/presentation/widgets/popUps/warningDialog.dart';
 import 'package:flutter/widgets.dart';
 
 
@@ -61,97 +62,91 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Container(
-                        height: 60,
-                        color: Colors.white,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 4,
-                                  child: Text('Backup Database', style: TextStyle(fontSize: 18),)
-                              ),
-                              Expanded(
-                                  flex: 1,
-                                  child: Icon(Icons.save_alt, size: 30, color: blueDeep,)
-                              ),
-                            ],
-                          ),
-                        )
+                      // ================ BACKUP DATABASE ACTION =====================
+                      IconsWithTextButton(
+                        onTap: () async{
+                          await DbHelper().backupDB();
+                          _displayBottomSheet(context, 'DataBase Successfully Backup.');
+                        },
+                        text: 'Backup Database',
+                        textColor: blueDeep,
+                        icon: const Icon(
+                          Icons.save_alt,
+                          color: blueDeep,
+                          size: 30,
+                        ),
                       ),
                       SizedBox(height: 8),
-                      Container(
-                          height: 60,
-                          color: Colors.white,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    flex: 4,
-                                    child: Text('Restore Database', style: TextStyle(fontSize: 18),)
-                                ),
-                                Expanded(
-                                    flex: 1,
-                                    child: Icon(Icons.restart_alt, size: 30, color: lightGreen,)
-                                ),
-                              ],
-                            ),
-                          )
+
+                      // ================ RESTORE DATABASE ACTION =====================
+                      IconsWithTextButton(
+                        onTap: () async{
+                          await DbHelper().restoreDB();
+                          _displayBottomSheet(context, 'Successfully Restore DataBase.');
+                        },
+                        text: 'Restore Database',
+                        textColor: lightGreen,
+                        icon: const Icon(
+                          Icons.restart_alt,
+                          color: lightGreen,
+                          size: 30,
+                        ),
                       ),
                       SizedBox(height: 8),
-                      Container(
-                          height: 60,
-                          color: Colors.white,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                    flex: 4,
-                                    child: Text('Delete Database', style: TextStyle(fontSize: 18),)
-                                ),
-                                Expanded(
-                                    flex: 1,
-                                    child: Icon(Icons.delete_outline, size: 30, color: lightRed,)
-                                ),
-                              ],
-                            ),
-                          )
+
+                      // ================ DELETE DATABASE ACTION =====================
+                      IconsWithTextButton(
+                        onTap: (){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return WarningDialog(
+                                height: 150,
+                                onDelete: () async{
+                                  await DbHelper().deleteDB();
+                                  Navigator.pop(context);
+                                  _displayBottomSheet(context, 'Database Deleted.');
+                                },
+                              );
+                            },
+                          );
+                        },
+                        text: 'Delete Database',
+                        textColor: lightRed,
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: lightRed,
+                          size: 30,
+                        ),
                       ),
                     ],
                   ),
                 ),
               )
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: OutlinedButton(
-              //     onPressed: () async {
-              //       await DbHelper().deleteDB();
-              //     },
-              //     style: const ButtonStyle(
-              //       backgroundColor: MaterialStatePropertyAll<Color>(Colors.pinkAccent),
-              //       foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
-              //       side: MaterialStatePropertyAll<BorderSide>(BorderSide(color: Colors.green)),
-              //       padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(12.0)),
-              //     ),
-              //     child: const Text('Delete Database', style: TextStyle(fontSize: 20),),
-              //   ),
-              // ),
             ],
           ),
         ),
       ),
+    );
+  }
 
-      // bottomNavigationBar: GlobalBottomBar(),
-      // floatingActionButton: CircularFloatingButton(
-      //   iconData: Icons.add,
-      //   onPressed: (){
-      //     print("Full List Page Action");
-      //   },
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+  Future _displayBottomSheet(BuildContext context, String textData){
+    return showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+                top: Radius.circular(10)
+            )
+        ),
+        builder: (context) => SizedBox(
+          height: 80,
+          child: Center(
+              child: Text(
+                  textData,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.green)
+              )
+          ),
+        )
     );
   }
 }
